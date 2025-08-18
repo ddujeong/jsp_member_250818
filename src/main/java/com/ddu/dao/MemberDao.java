@@ -21,6 +21,10 @@ public class MemberDao {
 	public static final int MEMBER_JOIN_FAIL = 0;
 	public static final int MEMBER_LOGIN_SUCCESS = 1;
 	public static final int MEMBER_LOGIN_FAIL = 0;
+	public static final int ID_USE_SUCCESS = 1;
+	public static final int ID_USE_FAIL = 0;
+	public static final int ID_DELETE_SUCCESS = 1;
+	public static final int ID_DELETE_FAIL = 0;
 	int sqlResult = 0;
 	
 	public int insertMember(MemberDto memberDto) { // 회원가입 메서드
@@ -98,7 +102,81 @@ public class MemberDao {
 			}
 		  return sqlResult; // 1로 반환되면 로그인 성공 0으로 반환되면 로그인 실패
 	  }
-	 
+	  
+	  public int confirmId (String id) {
+		  String sql ="SELECT memberid FROM membertbl WHERE memberid=?";
+		  int sqlResult = 0;
+		  try {
+				Class.forName(driverName);
+				conn = DriverManager.getConnection(url, username, password);	
+				pstmt = conn.prepareStatement(sql); 
+				
+				pstmt.setString(1, id);
+
+				rs = pstmt.executeQuery(); // 회원가입 성공하면 sqlResult 값이 1로 변환
+				
+				if (rs.next()) { // 로그인 실패
+					sqlResult =ID_USE_FAIL;
+				} else { // 로그인 성공
+					sqlResult =ID_USE_SUCCESS;
+				}
+				
+			} catch(Exception e) {	
+				System.out.println("아이디 체크 실패");
+				e.printStackTrace();
+			} finally { 
+				try {
+					if (rs != null) {
+					rs.close();
+					}
+					if(pstmt != null){
+					pstmt.close();
+					}
+					if(conn != null){ 	
+					conn.close();
+					} 
+				} catch(Exception e) {
+					e.printStackTrace();
+				}	
+	  }
+		  return sqlResult;
+		  
+		  
 	
-	
+	  }
+	  public int deleteId (String id) {
+		  String sql ="DELETE FROM membertbl WHERE memberid=?";
+		  int sqlResult = 0;
+		  try {
+				Class.forName(driverName);
+				conn = DriverManager.getConnection(url, username, password);	
+				pstmt = conn.prepareStatement(sql); 
+				
+				pstmt.setString(1, id);
+
+				sqlResult = pstmt.executeUpdate(); // 회원가입 성공하면 sqlResult 값이 1로 변환
+				
+				if (sqlResult == 1) { // 회원 탈퇴 성공
+					sqlResult = ID_DELETE_SUCCESS;
+				} else { // 회원 탈퇴 실패
+					sqlResult =ID_DELETE_FAIL;
+				}
+				
+			} catch(Exception e) {	
+				System.out.println("아이디 체크 실패");
+				e.printStackTrace();
+			} finally { 
+				try {
+					
+					if(pstmt != null){
+					pstmt.close();
+					}
+					if(conn != null){ 	
+					conn.close();
+					} 
+				} catch(Exception e) {
+					e.printStackTrace();
+				}	
+	  }return sqlResult;
+	  }
 }

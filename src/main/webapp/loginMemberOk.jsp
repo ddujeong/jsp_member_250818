@@ -8,7 +8,6 @@
 <title>로그인 성공</title>
 </head>
 <body>
-	<h2></h2>
 	<%
 		String mid = request.getParameter("loginid");
 		String mpw = request.getParameter("loginpw");

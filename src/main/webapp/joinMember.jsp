@@ -10,7 +10,7 @@
 	<h2>회원 가입</h2>
 	<hr>
 	<form action="joinMemberOk.jsp" name="joinForm" method="post">
-	아이디 : <input type="text" name="memberid"><br><br>
+	아이디 : <input type="text" name="memberid"> <input type="button"><br><br>
 	비밀번호 : <input type="password" name="memberpw"><br><br>
 	회원이름 : <input type="text" name="membername"><br><br>
 	회원나이 : <input type="text" name="memberage"><br><br>

@@ -27,15 +27,27 @@
 		
 		MemberDao memberDao = new MemberDao();
 		
-		int joinResult =  memberDao.insertMember(memberDto);
+		String mid = request.getParameter("loginid");
+		//int joinResult =  memberDao.insertMember(memberDto);
 		// 1(성공) or 0(실패) 반환
+		//int joinResult = 0;
+		//memberDto.setMemberid(mid);
+		int idResult = memberDao.confirmId(mid);
+		// 0 (성공) or 1(실패) 반환
 		
-		if(joinResult == MemberDao.MEMBER_JOIN_SUCCESS){
-			out.print("<script>alert('회원가입 성공!')</script>");
-			response.sendRedirect("loginMember.jsp");
-		} else {
-			out.print("<script>alert('회원가입 실패!');history.go(-1);</script>");
+		if(idResult == MemberDao.ID_USE_FAIL){
+			out.print("<script>alert('이미 존재하는 아이디 입니다');history.go(-1);</script>");
+		}else {
+			int  joinResult =  memberDao.insertMember(memberDto);
+			if(joinResult == MemberDao.MEMBER_JOIN_SUCCESS){
+				out.print("<script>alert('회원가입 성공!')</script>");
+				// response.sendRedirect("loginMember.jsp");
+			} else {
+				out.print("<script>alert('회원가입 실패!');history.go(-1);</script>");
+			}
 		}
+		
+		
 	%>
 </body>
 </html>
