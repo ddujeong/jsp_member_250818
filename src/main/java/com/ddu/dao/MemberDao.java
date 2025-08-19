@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
 import com.ddu.dto.MemberDto;
 
 public class MemberDao {
@@ -17,6 +16,7 @@ public class MemberDao {
 	Connection conn = null;
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
+	
 	public static final int MEMBER_JOIN_SUCCESS = 1;
 	public static final int MEMBER_JOIN_FAIL = 0;
 	public static final int MEMBER_LOGIN_SUCCESS = 1;
@@ -25,6 +25,8 @@ public class MemberDao {
 	public static final int ID_USE_FAIL = 0;
 	public static final int ID_DELETE_SUCCESS = 1;
 	public static final int ID_DELETE_FAIL = 0;
+	public static final int MEMBER_UPDATE_SUCCESS = 1;
+	public static final int MEMBER_UPDATE_FAIL = 0;
 	int sqlResult = 0;
 	
 	public int insertMember(MemberDto memberDto) { // 회원가입 메서드
@@ -73,7 +75,7 @@ public class MemberDao {
 				
 				pstmt.setString(1, id);
 				pstmt.setString(2, pw);
-				rs = pstmt.executeQuery(); // 회원가입 성공하면 sqlResult 값이 1로 변환
+				rs = pstmt.executeQuery(); 
 				
 				if (rs.next()) { // 로그인 성공
 					sqlResult =MEMBER_LOGIN_SUCCESS;
@@ -113,7 +115,7 @@ public class MemberDao {
 				
 				pstmt.setString(1, id);
 
-				rs = pstmt.executeQuery(); // 회원가입 성공하면 sqlResult 값이 1로 변환
+				rs = pstmt.executeQuery(); 
 				
 				if (rs.next()) { // 로그인 실패
 					sqlResult =ID_USE_FAIL;
@@ -163,7 +165,7 @@ public class MemberDao {
 				}
 				
 			} catch(Exception e) {	
-				System.out.println("아이디 체크 실패");
+				System.out.println("아이디 조회 실패");
 				e.printStackTrace();
 			} finally { 
 				try {
@@ -178,5 +180,81 @@ public class MemberDao {
 					e.printStackTrace();
 				}	
 	  }return sqlResult;
+	  }
+	  public MemberDto getMemberInfo(String memberId) {
+		  String sql = "SELECT * FROM membertbl WHERE memberid=?";
+		  MemberDto memberDto = new MemberDto();
+		  try {
+				Class.forName(driverName);
+				conn = DriverManager.getConnection(url, username, password);	
+				pstmt = conn.prepareStatement(sql); 
+				
+				pstmt.setString(1 , memberId);
+				rs = pstmt.executeQuery();
+				
+				if (rs.next()) {
+					memberDto.setMemberid(rs.getString("memberid"));
+					memberDto.setMemberpw(rs.getString("memberpw"));
+					memberDto.setMembername(rs.getString("membername"));
+					memberDto.setMemberage(rs.getInt("memberage"));
+					memberDto.setMemberemail(rs.getString("memberemail"));
+					memberDto.setMemberdate(rs.getString("memberdate"));
+				}
+			} catch(Exception e) {	
+				System.out.println("로그인 체크 실패");
+				e.printStackTrace();
+			} finally { 
+				try {
+					if (rs != null) {
+					rs.close();
+					}
+					if(pstmt != null){
+					pstmt.close();
+					}
+					if(conn != null){ 	
+					conn.close();
+					} 
+				} catch(Exception e) {
+					e.printStackTrace();
+				}	
+				
+			}return memberDto;
+	  }
+		public int updateMember(String memberid, String memberpw, String membername, int memberage, String memberemail) { // 회원가입 메서드
+			String sql = "UPDATE membertbl SET memberpw=?,membername=?,memberage=?,memberemail=? WHERE memberid=?";
+			int sqlResult =0;
+			try {
+				Class.forName(driverName);
+				conn = DriverManager.getConnection(url, username, password);	
+				pstmt = conn.prepareStatement(sql); 
+				
+				pstmt.setString(1, memberpw);
+				pstmt.setString(2, membername);
+				pstmt.setInt(3, memberage);
+				pstmt.setString(4, memberemail);
+				pstmt.setString(5, memberid);
+				
+				sqlResult = pstmt.executeUpdate(); // 회원가입 성공하면 sqlResult 값이 1로 변환
+				
+			} catch(Exception e) {	
+				System.out.println("회원 수정 실패");
+				e.printStackTrace();
+			} finally { 
+				try {
+					if(pstmt != null){
+					pstmt.close();
+					}
+					if(conn != null){ 
+					conn.close();
+					} 
+				} catch(Exception e) {
+					e.printStackTrace();
+				}	
+			}
+			if (sqlResult == 1) {
+				return MEMBER_UPDATE_SUCCESS; // 1
+			} else {
+				return MEMBER_UPDATE_FAIL; // 0
+			}  
 	  }
 }
